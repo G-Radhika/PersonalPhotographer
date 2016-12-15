@@ -1,4 +1,4 @@
-# Photographer Assistant with GoogleHome.
+# Photo Assistant with GoogleHome.
 
 This is a really photographer implementation that gets Api.ai classification JSON (i.e. a JSON output of Api.ai /query endpoint) and returns a fulfillment response.
 
