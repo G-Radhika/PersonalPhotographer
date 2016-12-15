@@ -1,0 +1,6 @@
+{
+  "name": "Photographer Webhook Server",
+  "description": "Personal photographer who takes a picture when prompted by the vioce command via Google Home",
+  "repository": "https://github.com/G-Radhika",
+  "keywords": ["api.ai", "natural language", "Webhook"]
+}
