@@ -11,6 +11,9 @@
   "license": "Apache 2.0",
   "dependencies": {
     "body-parser": "^1.15.0",
-    "express": "^4.13.4"
+    "express": "^4.13.4",
+    "v4l2camera": "*",
+    "pngjs": "*",
+    "fs": "*" 
   }
 }
