@@ -6,6 +6,23 @@ var http = require("http");
 var pngjs = require("pngjs");
 var v4l2camera = require("v4l2camera");
 
+var gcloud = require('google-cloud');
+var storage = gcloud.storage;
+var storage = require('@google-cloud/storage');
+var fs = require("fs");
+
+// Authenticating on a per-API-basis. You don't need to do this if you auth on a
+// global basis (see Authentication section above).
+
+var gcs = storage({
+  projectId: 'personal-photographer',
+  keyFilename: './personal-photographer-833f66686fbd.json'
+});
+
+// Reference an existing bucket.
+var bucket = gcs.bucket('photoassist-bucket');
+
+
 
 const restService = express();
 restService.use(bodyParser.json());
@@ -29,11 +46,23 @@ restService.post('/', function (req, res) {
                 }
 
                 if (requestBody.result.action === 'TakePicture') {
-                    var fs = require("fs");
                     var png = toPng();
                     png.pack().pipe(fs.createWriteStream('result.png'));
 		    speech = 'Sridhar Picture Taken';
                     console.log('picture saved');
+                    // Upload a local file to a new file to be created in your bucket.
+                    bucket.upload('result.png', function(err, file) {
+                        if (!err) {
+                             console.log("result.png is now in your bucket.");
+                            }else {
+                                console.log("Error uploading to  bucket." + err);
+                            }
+                    });
+
+                    // Download a file from your bucket.
+                    bucket.file('giraffe.jpg').download({
+                        destination: '/resultGCS.png'
+                    }, function(err) {});
 		    
                 }
             }

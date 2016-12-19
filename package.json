@@ -10,10 +10,12 @@
   "author": "Radhika Godugu <radhik.g@gmail.com>",
   "license": "Apache 2.0",
   "dependencies": {
+    "@google-cloud/storage": "^0.6.0",
     "body-parser": "^1.15.0",
     "express": "^4.13.4",
-    "v4l2camera": "latest",
+    "fs": "latest",
+    "google-cloud": "latest",
     "pngjs": "latest",
-    "fs": "latest" 
+    "v4l2camera": "latest"
   }
 }
