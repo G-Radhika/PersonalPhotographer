@@ -11,6 +11,14 @@ var storage = gcloud.storage;
 var storage = require('@google-cloud/storage');
 var fs = require("fs");
 
+var Vision = require('@google-cloud/vision');
+
+// Instantiate a vision client
+var vision = Vision({
+  projectId: 'personal-photographer',
+  keyFilename: './personal-photographer-1887ee02d70c.json'
+});
+
 // Authenticating on a per-API-basis. You don't need to do this if you auth on a
 // global basis (see Authentication section above).
 
@@ -21,8 +29,6 @@ var gcs = storage({
 
 // Reference an existing bucket.
 var bucket = gcs.bucket('photoassist-bucket');
-
-
 
 const restService = express();
 restService.use(bodyParser.json());
@@ -47,37 +53,60 @@ restService.post('/', function (req, res) {
 
                 if (requestBody.result.action === 'TakePicture') {
                     var png = toPng();
-                    png.pack().pipe(fs.createWriteStream('result.png'));
-		    speech = 'Sridhar Picture Taken';
+                    var resultImage = 'result' + Date.now() + '.png';
+                    // Write the result to a file
+                    //png.pack().pipe(fs.createWriteStream(resultImage));
+                    fs.writeFileSync(resultImage, pngjs.PNG.sync.write(png.pack()));
+                    speech = 'Picture Taken';
                     console.log('picture saved');
                     // Upload a local file to a new file to be created in your bucket.
-                    bucket.upload('result.png', function(err, file) {
+                    /*bucket.upload(resultImage, function(err, file) {
                         if (!err) {
-                             console.log("result.png is now in your bucket.");
+                             console.log(resultImage + " is now in your bucket.");
                             }else {
                                 console.log("Error uploading to  bucket." + err);
                             }
-                    });
+                      });*/     
 
-                    // Download a file from your bucket.
-                    bucket.file('giraffe.jpg').download({
-                        destination: '/resultGCS.png'
-                    }, function(err) {});
-		    
+                    vision.detectFaces(resultImage, function (err, faces, response) {
+                    if (err) {
+                        console.log("Error in vision.detectFaces." + err );
+                    }else {
+                        var numFaces = faces.length;
+                        console.log('Found ' + numFaces + (numFaces === 1 ? ' face' : ' faces'));
+                        
+                        faces.forEach(function (face) {
+                            console.log(null, face);
+                            if(face.joy)
+                                speech += 'you look happy';
+                            else if(face.sorrow)
+                                speech +=  'you look sad';
+                            else if(face.anger)
+                                speech += 'you look angry';
+                            else if(face.surpise)
+                                speech += 'you look surprised';
+                            else 
+                                speech += 'I can not read your mood';
+
+                        });
+                         console.log('result: ', speech);
+
+                        return res.json({
+                                speech: speech,
+                                displayText: speech,
+                                source: 'apiai-webhook-sample'
+                            });
+
+                    }});
                 }
             }
         }
 
-        console.log('result: ', speech);
 
-        return res.json({
-            speech: speech,
-            displayText: speech,
-            source: 'apiai-webhook-sample'
-        });
+       
     } catch (err) {
         console.error("Can't process request", err);
-
+        
         return res.status(400).json({
             status: {
                 code: 400,
@@ -90,7 +119,7 @@ restService.post('/', function (req, res) {
 restService.get('/', function(req, res){
   console.log('http get request from browser');
    try {
-        
+
      if (req.url === "/") {
         res.writeHead(200, {
             "content-type": "text/html;charset=utf-8",
@@ -105,7 +134,7 @@ restService.get('/', function(req, res){
         ].join(""));
         return;
     }
-    
+
     } catch (err) {
         console.error("Can't process request", err);
 
@@ -116,11 +145,11 @@ restService.get('/', function(req, res){
             }
         });
     }
-});
+  });
 
 // For all other requests
 restService.use(function(req, res, next){
-        
+
     if (req.url.match(/^\/.+\.png$/)) {
         res.writeHead(200, {
             "content-type": "image/png",
@@ -129,7 +158,7 @@ restService.use(function(req, res, next){
         var png = toPng();
         return png.pack().pipe(res);
     }
-   
+
     next();
 });
 
@@ -150,7 +179,7 @@ var script = function () {
                 load();
             }, false);
             img.src = "/" + Date.now() + ".png";
-	    console.log("In script: " + img.src);
+            console.log("In script: " + img.src);
         })();
     }, false);
 };
@@ -178,6 +207,6 @@ if (cam.configGet().formatName !== "YUYV") {
 }
 cam.configSet({width: 352, height: 288});
 cam.start();
-cam.capture(function loop() {
+cam.capture(function loop(){
     cam.capture(loop);
 });
