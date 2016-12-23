@@ -6,6 +6,14 @@ var http = require("http");
 var pngjs = require("pngjs");
 var v4l2camera = require("v4l2camera");
 
+//For Caption Service.
+const captionService = require('./caption-service'),
+    needle = require("needle"),
+    restify = require('restify'),
+    url = require('url'),
+    validUrl = require('valid-url'),
+    PNG = require('pngjs').PNG;
+
 var gcloud = require('google-cloud');
 var storage = gcloud.storage;
 var storage = require('@google-cloud/storage');
@@ -33,6 +41,13 @@ var bucket = gcs.bucket('photoassist-bucket');
 const restService = express();
 restService.use(bodyParser.json());
 
+
+function printFaces(faces){
+    if(faces && faces.length){
+        console.log("Age and Gender of this face: " + "Age: " + faces[0].age + " Gender: "+ faces[0].gender);
+    }
+}
+
 restService.post('/', function (req, res) {
 
     console.log('webhook request from API.AI');
@@ -57,7 +72,7 @@ restService.post('/', function (req, res) {
                     // Write the result to a file
                     //png.pack().pipe(fs.createWriteStream(resultImage));
                     fs.writeFileSync(resultImage, pngjs.PNG.sync.write(png.pack()));
-                    speech = 'Picture Taken';
+                    speech = 'Picture taken and... ';
                     console.log('picture saved');
                     // Upload a local file to a new file to be created in your bucket.
                     /*bucket.upload(resultImage, function(err, file) {
@@ -78,18 +93,52 @@ restService.post('/', function (req, res) {
                         faces.forEach(function (face) {
                             console.log(null, face);
                             if(face.joy)
-                                speech += 'you look happy';
+                                speech += ' you look happy';
                             else if(face.sorrow)
-                                speech +=  'you look sad';
+                                speech +=  ' you look sad';
                             else if(face.anger)
-                                speech += 'you look angry';
+                                speech += ' you look angry';
                             else if(face.surpise)
-                                speech += 'you look surprised';
+                                speech += ' you look surprised';
                             else 
-                                speech += 'I can not read your mood';
+                                speech += ' I can not read your mood';
 
                         });
                          console.log('result: ', speech);
+
+                        // MS API: Read Stream for Captions  
+                        fs.createReadStream(resultImage)
+                            .pipe(new PNG())
+                            .on('parsed', function() {
+                                captionService.getCaptionFromStream(this.pack())
+                                    .then(caption => console.log("This picture says this about you... " + caption))
+                                    .catch(error => console.error(error));
+                        });
+
+
+                        // Read Stream for FACES
+                        fs.createReadStream(resultImage)
+                            .pipe(new PNG())
+                            .on('parsed', function() {                               
+                                captionService.getFacesFromStream(this.pack())
+                                    .then(faces => printFaces(faces))
+                                    .catch(error => console.error(error));
+                        });
+                        
+                        //MS API:  Read Stream for EMOTIONS
+                        /* This image size is too big it seems for MS
+                        fs.createReadStream(resultImage)
+                            .pipe(new PNG())
+                            .on('parsed', function() {                               
+                                captionService.getEMOTIONSFromStream(this.pack())
+                                    .then(emotions => console.log(null, emotions))
+                                    .catch(error => console.error(error));
+                        });
+                        */
+                        captionService.getEMOTIONSFromUrl('https://tse3.mm.bing.net/th?id=OIP.M9cfa7362b791260dbfbfbb2a5810a01eo2&pid=Api')
+                                    .then(emotions => console.log(null,emotions[0].scores))
+                                  .catch(error => console.error(error));
+
 
                         return res.json({
                                 speech: speech,

@@ -20,7 +20,9 @@
     "natural": "latest",
     "redis": "latest",
     "pngjs": "latest",
-    "v4l2camera": "latest"
+    "v4l2camera": "latest",
+    "valid-url": "latest",
+    "request": "latest"
   },
   "devDependencies": {
     "mocha": "^3.1.0"
