@@ -22,7 +22,8 @@
     "pngjs": "latest",
     "v4l2camera": "latest",
     "valid-url": "latest",
-    "request": "latest"
+    "request": "latest",
+    "watson-developer-cloud": "latest"
   },
   "devDependencies": {
     "mocha": "^3.1.0"

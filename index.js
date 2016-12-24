@@ -38,6 +38,17 @@ var gcs = storage({
 // Reference an existing bucket.
 var bucket = gcs.bucket('photoassist-bucket');
 
+
+var watson = require('watson-developer-cloud');
+var visual_recognition = watson.visual_recognition({
+  headers: {
+    "X-Watson-Learning-Opt-Out": "1"
+  },
+  api_key: '97ae832e5433a7c726763ef1187891619fae4819',
+  version: 'v3',
+  version_date: '2016-05-19'
+});
+
 const restService = express();
 restService.use(bodyParser.json());
 
@@ -106,6 +117,7 @@ restService.post('/', function (req, res) {
                         });
                          console.log('result: ', speech);
 
+                        /*
                         // MS API: Read Stream for Captions  
                         fs.createReadStream(resultImage)
                             .pipe(new PNG())
@@ -124,7 +136,7 @@ restService.post('/', function (req, res) {
                                     .then(faces => printFaces(faces))
                                     .catch(error => console.error(error));
                         });
-                        
+                        */
                         //MS API:  Read Stream for EMOTIONS
                         /* This image size is too big it seems for MS
                         fs.createReadStream(resultImage)
@@ -134,18 +146,44 @@ restService.post('/', function (req, res) {
                                     .then(emotions => console.log(null, emotions))
                                     .catch(error => console.error(error));
                         });
-                        */
+                        
                         captionService.getEMOTIONSFromUrl('https://tse3.mm.bing.net/th?id=OIP.M9cfa7362b791260dbfbfbb2a5810a01eo2&pid=Api')
                                     .then(emotions => console.log(null,emotions[0].scores))
                                   .catch(error => console.error(error));
+                        */
+                        var params = {
+                            classifier_ids: [
+                                "uyyala_family_331440013"
+                            ],
+                            images_file: fs.createReadStream(resultImage),
+                        };
 
+                        visual_recognition.classify(params, function(err, resp) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            else {
+                                console.log("Response: " + JSON.stringify(resp, null, 2));
 
-                        return res.json({
-                                speech: speech,
-                                displayText: speech,
-                                source: 'apiai-webhook-sample'
+                                if(resp && resp.images.length && resp.images[0].classifiers.length){
+                                    speech += ', ' + resp.images[0].classifiers[0].classes[0].class;
+                                }
+
+                          
+                                console.log('result: ', speech);
+                                return res.json({
+                                    speech: speech,
+                                    displayText: speech,
+                                    source: 'apiai-webhook-sample'
                             });
 
+                            } 
+                           
+                                
+                        });
+
+
+                       
                     }});
                 }
             }

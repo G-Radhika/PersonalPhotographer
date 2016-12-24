@@ -6,9 +6,9 @@
 
 const request = require('request').defaults({ encoding: null });
 
-const VISION_URL_FACES = "https://api.projectoxford.ai/vision/v1.0/analyze/?visualFeatures=Faces&form=BCSIMG&subscription-key=" + "35246a701d474ef2bb9801db14f20a68";
-const VISION_URL_DESCRIPTION = "https://api.projectoxford.ai/vision/v1.0/analyze/?visualFeatures=Description&form=BCSIMG&subscription-key=" + "35246a701d474ef2bb9801db14f20a68";
-const EMOTION = "https://api.projectoxford.ai/emotion/v1.0/recognize/?form=BCSIMG&subscription-key=" + "752a0a7a6ab646d7b1f3831f74c3409a";   
+const VISION_URL_FACES = "https://api.projectoxford.ai/vision/v1.0/analyze/?visualFeatures=Faces&form=BCSIMG&subscription-key=" + "TODO: add your key";
+const VISION_URL_DESCRIPTION = "https://api.projectoxford.ai/vision/v1.0/analyze/?visualFeatures=Description&form=BCSIMG&subscription-key=" + "TODO: add your key";
+const EMOTION = "https://api.projectoxford.ai/emotion/v1.0/recognize/?form=BCSIMG&subscription-key=" + "TODO: add your key";   
 
 /** 
  *  Gets the caption of the image from an image stream
