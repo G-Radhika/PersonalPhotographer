@@ -14,15 +14,11 @@
 
 <img src="./PhotoAssistant.jpg" width="640px" height="480px">
 
-# Setup and Install
-
-# Modules
-
-
-# What does the service do?
-It's a simple camera service that takes  `TakePicture` voice commands from the Api.ai  and takes a picture
-
-#How to Run the service
-npm install
-nodejs index.js or npm start
+# Install
+> ngrok http 3000  
+> git clone (this repo)  
+> cd (this repo)  
+> npm install  
+> npm start or node server  
+> login to API.API and add ngrok link in webhook fulfill
 
