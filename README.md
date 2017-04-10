@@ -14,11 +14,19 @@
 
 <img src="./PhotoAssistant.jpg" width="640px" height="480px">
 
-# Install
+# Setup
 > ngrok http 3000  
 > git clone (this repo)  
 > cd (this repo)  
 > npm install  
 > npm start or node server  
 > login to API.API and add ngrok link in webhook fulfill
+> Use google cloud console to register PhotoAssistant with google home
+
+# Demo Run
+> Now you can use following voice commands to take a picture  
+> You: OK Google, take a picture 
+> Google Home: Sure, Let me know when you are ready?
+> You: Yes, I am ready
+> Google Home: Your picture is taken, You look happy('whatever your emotion is read') Radhika ('After person classification')
 
