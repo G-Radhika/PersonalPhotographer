@@ -24,9 +24,9 @@
 > Use google cloud console to register PhotoAssistant with google home
 
 # Demo Run
-> Now you can use following voice commands to take a picture  
-> You: OK Google, take a picture 
-> Google Home: Sure, Let me know when you are ready?
-> You: Yes, I am ready
-> Google Home: Your picture is taken, You look happy('whatever your emotion is read') Radhika ('After person classification')
+> Now you can use following voice commands to take a picture   
+> You: OK Google, take a picture   
+> Google Home: Sure, Let me know when you are ready?  
+> You: Yes, I am ready  
+> Google Home: Your picture is taken, You look happy('whatever your emotion is read') Radhika ('After person classification')  
 
