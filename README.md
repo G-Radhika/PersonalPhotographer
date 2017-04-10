@@ -4,7 +4,7 @@ This is a photographer webhook implementation integrated with GoogleHome
 
 # Setup
 
-<img src="./PhotoAssistant.jpg">
+<img src="./PhotoAssistant.jpg" width="640px" height="480px">
 
 
 # What does the service do?
